@@ -22,6 +22,10 @@ namespace gWikiGrabber
 {
     class Program
     {
+        const string DefaultString = "String";
+        const bool DefaultBool = true;
+        const int DefaultNumber = 1;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Enter the web page (NOTE: THIS MUST HAS HTTP or HTTPS):");
@@ -32,7 +36,7 @@ namespace gWikiGrabber
 
         static void GetData()
         {
-            var web = "http://wiki.garrysmod.com/page/Category:Library_Functions";
+            var web = "http://wiki.garrysmod.com/page/Category:Class_Functions";
 
             Console.WriteLine(web);
 
@@ -197,7 +201,7 @@ namespace gWikiGrabber
 
                 var cls = new CodeTypeDeclaration(m.Key);
 
-                cls.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+                cls.Attributes = MemberAttributes.Public;
 
                 var meths = new CodeMemberMethod[m.Value.Count];
 
@@ -209,7 +213,7 @@ namespace gWikiGrabber
                 {
                     meths[count] = new CodeMemberMethod();
 
-                    meths[count].Attributes = MemberAttributes.Public | MemberAttributes.Static;
+                    meths[count].Attributes = MemberAttributes.Public;
 
                     /*var reg = "(?={{)[^<]*";
 
@@ -240,6 +244,9 @@ namespace gWikiGrabber
                     string RawName = "";
                     string RawDescription = "";
                     string RawRealm = "";
+
+                    string rtype = "";
+                    string rdesc = "";
 
                     foreach (var ms in txt.Split('\n'))
                     {
@@ -309,6 +316,18 @@ namespace gWikiGrabber
                                 RawRealm = sp.Split('=')[1].Trim();
 
                             continue;
+                        }
+
+                        if (CurrentBlock == "Ret")
+                        {
+                            if (rtype != "" && rdesc != "")
+                                continue;
+
+                            if (sp.Split('=')[0].Trim().ToLower() == "type")
+                                rtype = sp.Split('=')[1].Trim();
+
+                            if (sp.Split('=')[0].Trim().ToLower() == "desc")
+                                rdesc = sp.Split('=')[1].Trim();
                         }
 
 
@@ -402,6 +421,26 @@ namespace gWikiGrabber
                         meths[count].Comments.Add(new CodeCommentStatement("<param name=\"" + arg.Key + "\">" + arg.Value.Item2 + (arg.Value.Item2.EndsWith(".") ? "" : ".") + "</param>"));
                     }
 
+                    if (rtype != "" && rdesc != "")
+                        meths[count].Comments.Add(new CodeCommentStatement("<return>" + rtype + "|" + rdesc + "</return>"));
+
+                    if (rtype != "")
+                    {
+                        meths[count].ReturnType = new CodeTypeReference((rtype.ToLower() == "number" ? DefaultNumber.GetType().ToString() : (rtype.ToLower() == "string" ? DefaultString.GetType().ToString() : (rtype.ToLower() == "boolean" ? DefaultBool.GetType().ToString() : rtype))));
+
+                        if (rtype.ToLower() == "number")
+                            meths[count].Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(DefaultNumber)));
+
+                        else if (rtype.ToLower() == "string")
+                            meths[count].Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(DefaultString)));
+
+                        else if (rtype.ToLower() == "boolean")
+                            meths[count].Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(DefaultBool)));
+
+                        else
+                            meths[count].Statements.Add(new CodeMethodReturnStatement(new CodeObjectCreateExpression(rtype, new CodeExpression[] { })));
+                    }
+
                     count++;
                 }
 
@@ -414,13 +453,27 @@ namespace gWikiGrabber
 
                 cm.Namespaces.Add(nm);
 
-                var tw = new IndentedTextWriter(new StreamWriter(m.Key + ".cs", false), "    ");
+                IndentedTextWriter tw = null;
+
+                try
+                {
+                    tw = new IndentedTextWriter(new StreamWriter(m.Key + ".cs", false), "    ");
+                }
+                catch
+                {
+                    Console.WriteLine("Done!");
+                    Console.WriteLine("Press any key to exit...");
+
+                    Console.ReadKey();
+
+                    Environment.Exit(0);
+                }
 
                 csharp.GenerateCodeFromCompileUnit(cm, tw, new CodeGeneratorOptions());
 
                 tw.Close();
 
-                Console.WriteLine("CLASS " + m.Key + ".cs successfully wroten!");
+                Console.WriteLine("CLASS " + m.Key + ".cs successfully written!");
             }
 
             Console.WriteLine("Finished! Check the existing file called " + file + " ;)");
