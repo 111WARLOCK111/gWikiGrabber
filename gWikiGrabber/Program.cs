@@ -26,8 +26,12 @@ namespace gWikiGrabber
         const bool DefaultBool = true;
         const int DefaultNumber = 1;
 
+        const string DirName = "generates";
+
         static void Main(string[] args)
         {
+            if (!Directory.Exists(DirName)) Directory.CreateDirectory(DirName);
+
             Console.WriteLine("Enter the web page (NOTE: THIS MUST HAS HTTP or HTTPS):");
             Console.WriteLine();
 
@@ -296,11 +300,9 @@ namespace gWikiGrabber
 
                             if (name != "" && type != "" && desc != "")
                             {
-                                name = name.Replace("\"", "");
-                                name = name.Replace(" ", "");
+                                name = name.Replace("\"", "").Replace(" ", "").Replace("vararg", "object").Replace("...", "params object[]");
 
-                                type = type.Replace("\"", "");
-                                type = type.Replace(" ", "");
+                                type = type.Replace("\"", "").Replace(" ", "").Replace("vararg", "object").Replace("...", "params object[]");
 
                                 Args.Add((Args.ContainsKey(name) ? name + "1" : name), new Tuple<String, String>(type, desc));
                                 name = "";
