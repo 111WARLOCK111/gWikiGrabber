@@ -74,7 +74,7 @@ namespace gWikiGrabber
                 return;
             }
 
-            Console.WriteLine("Data sucessfully received from the server.");
+            Console.WriteLine("Data successfully received from the server.");
 
             Console.WriteLine();
             Console.WriteLine();
@@ -199,7 +199,7 @@ namespace gWikiGrabber
 
                 nm.Imports.Add(imp);
 
-                var cls = new CodeTypeDeclaration(m.Key);
+                var cls = new CodeTypeDeclaration(m.Key.Replace(" ", ""));
 
                 cls.Attributes = MemberAttributes.Public;
 
@@ -502,8 +502,8 @@ namespace gWikiGrabber
             catch
             {
                 Console.WriteLine("Web page was incorrect. Please enter the web page again:");
-               // return DLPage(page);
-                return null;
+                return DLPage(page);
+                //return null;
             }
 
             return row;
