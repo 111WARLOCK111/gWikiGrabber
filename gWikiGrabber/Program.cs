@@ -296,6 +296,12 @@ namespace gWikiGrabber
 
                             if (name != "" && type != "" && desc != "")
                             {
+                                name = name.Replace("\"", "");
+                                name = name.Replace(" ", "");
+
+                                type = type.Replace("\"", "");
+                                type = type.Replace(" ", "");
+
                                 Args.Add((Args.ContainsKey(name) ? name + "1" : name), new Tuple<String, String>(type, desc));
                                 name = "";
                                 type = "";
@@ -464,7 +470,7 @@ namespace gWikiGrabber
                     Console.WriteLine("Done!");
                     Console.WriteLine("Press any key to exit...");
 
-                    Console.ReadKey();
+                    Console.ReadKey(true);
 
                     Environment.Exit(0);
                 }
