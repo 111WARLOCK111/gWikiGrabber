@@ -465,7 +465,7 @@ namespace gWikiGrabber
 
                 try
                 {
-                    tw = new IndentedTextWriter(new StreamWriter(m.Key + ".cs", false), "    ");
+                    tw = new IndentedTextWriter(new StreamWriter(DirName + "/" + m.Key + ".cs", false), "    ");
                 }
                 catch
                 {
