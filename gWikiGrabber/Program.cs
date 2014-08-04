@@ -36,7 +36,7 @@ namespace gWikiGrabber
 
         static void GetData()
         {
-            var web = "http://wiki.garrysmod.com/page/Category:Class_Functions";
+            var web = "http://wiki.garrysmod.com/page/Category:Library_Functions";
 
             Console.WriteLine(web);
 
