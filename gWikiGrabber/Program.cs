@@ -300,9 +300,9 @@ namespace gWikiGrabber
 
                             if (name != "" && type != "" && desc != "")
                             {
-                                name = name.Replace("\"", "").Replace(" ", "").Replace("vararg", "object").Replace("...", "params object[]");
+                                name = name.Replace("\"", "").Replace(" ", "").Replace("[", "").Replace("]", "").Replace("/", "Or");
 
-                                type = type.Replace("\"", "").Replace(" ", "").Replace("vararg", "object").Replace("...", "params object[]");
+                                type = type.Replace("\"", "").Replace(" ", "").Replace("vararg", "params object[]").Replace("...", "params object[]").Replace("any", "object").Replace("table", "NLua.LuaTable").Replace("function", "NLua.LuaFunction");
 
                                 Args.Add((Args.ContainsKey(name) ? name + "1" : name), new Tuple<String, String>(type, desc));
                                 name = "";
@@ -410,10 +410,10 @@ namespace gWikiGrabber
 
                     //var mtch = rex.Match(UTF.GetString(pg));
                     if (RawRealm != "")
-                        meths[count].Comments.Add(new CodeCommentStatement("<realm>" + RawRealm + "</realm>"));
+                        meths[count].Comments.Add(new CodeCommentStatement("<realm>" + RawRealm + "</realm>", true));
 
                     if (RawDescription != "")
-                        meths[count].Comments.Add(new CodeCommentStatement("<summary>" + RawDescription + "</summary>"));
+                        meths[count].Comments.Add(new CodeCommentStatement("<summary>" + RawDescription + "</summary>", true));
 
                     foreach (var arg in Args)
                     {
@@ -426,11 +426,11 @@ namespace gWikiGrabber
                             tp = typeof(string);
 
                         meths[count].Parameters.Add(new CodeParameterDeclarationExpression((tp == null ? arg.Value.Item1 : tp.ToString()), arg.Key));
-                        meths[count].Comments.Add(new CodeCommentStatement("<param name=\"" + arg.Key + "\">" + arg.Value.Item2 + (arg.Value.Item2.EndsWith(".") ? "" : ".") + "</param>"));
+                        meths[count].Comments.Add(new CodeCommentStatement("<param name=\"" + arg.Key + "\">" + arg.Value.Item2 + (arg.Value.Item2.EndsWith(".") ? "" : ".") + "</param>", true));
                     }
 
                     if (rtype != "" && rdesc != "")
-                        meths[count].Comments.Add(new CodeCommentStatement("<return>" + rtype + "|" + rdesc + "</return>"));
+                        meths[count].Comments.Add(new CodeCommentStatement("<return>" + rtype + "|" + rdesc + "</return>", true));
 
                     if (rtype != "")
                     {
